@@ -4,7 +4,7 @@ A browser-based street basketball management simulator where you build and lead 
 
 ## 🎮 Play Now
 
-**[▶️ PLAY KOB DYNASTY](https://astrophyd.github.io/KOB-dynasty/KOB%20Dynasty%20-%20Made%20by%20Astrophyd.html)**
+**[▶️ PLAY KOB DYNASTY](https://astrophyd.github.io/KOB-dynasty/)**
 
 ---
 
