@@ -1,0 +1,1278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>KOB Dynasty - Master Edition</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800;900&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #030712;
+            color: #f8fafc;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        .font-mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .screen-view {
+            display: none;
+        }
+        .screen-view.active {
+            display: flex;
+        }
+        ::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        @keyframes pulseGlow {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 0.4; }
+        }
+        .animate-glow {
+            animation: pulseGlow 4s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-2 sm:p-4 bg-gradient-to-br from-orange-950 via-amber-950 to-indigo-950">
+
+    <div id="appContainer" class="w-full max-w-md bg-slate-950/90 backdrop-blur-xl border-2 border-amber-500/40 rounded-3xl shadow-2xl p-4 flex flex-col min-h-[92vh] relative overflow-hidden">
+        
+        <!-- Ambient background glows -->
+        <div class="absolute -top-24 -left-24 w-48 h-48 bg-orange-500/25 rounded-full blur-3xl pointer-events-none animate-glow"></div>
+        <div class="absolute -bottom-24 -right-24 w-48 h-48 bg-amber-500/25 rounded-full blur-3xl pointer-events-none animate-glow"></div>
+
+        <!-- ==================== VIEW 1: MAIN HUB ==================== -->
+        <div id="hubScreen" class="screen-view active flex-col justify-between min-h-[88vh]">
+            <header class="w-full flex flex-col gap-2 z-10">
+                <div class="flex justify-between items-center bg-gradient-to-r from-orange-900/90 via-amber-900/90 to-yellow-900/90 border-2 border-amber-400/70 p-3.5 rounded-3xl shadow-2xl shadow-orange-500/20">
+                    <div class="flex items-center gap-3">
+                        <button onclick="openProfileModal()" class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-400 via-orange-500 to-yellow-400 flex items-center justify-center text-2xl shadow-lg shadow-orange-500/40 hover:scale-110 active:scale-95 transition-transform cursor-pointer relative group border-2 border-yellow-200">
+                            <span id="dynastyAvatarIcon">👑</span>
+                            <span class="absolute -bottom-1 -right-1 text-[8px] bg-orange-950 text-amber-200 border border-amber-400 px-1 rounded-md font-extrabold shadow">EDIT</span>
+                        </button>
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-[9px] uppercase font-black tracking-widest bg-amber-400 text-slate-950 border border-amber-300 px-2 py-0.5 rounded-md shadow">🏀 Street Dynasty</span>
+                                <button onclick="openProfileModal()" class="text-[9px] bg-amber-500/90 hover:bg-amber-400 text-slate-950 px-2 py-0.5 rounded-lg border border-amber-300 font-black transition-all shadow">Profile</button>
+                            </div>
+                            <h1 id="dynastyTitle" class="text-base font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-amber-200 to-yellow-300 leading-tight mt-0.5 drop-shadow">KOB DYNASTY</h1>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button id="musicToggleBtn" onclick="toggleGameMusic()" title="Toggle music" class="w-9 h-9 rounded-2xl bg-amber-950 hover:bg-amber-900 border border-amber-400/50 flex items-center justify-center text-sm transition-all shadow-md active:scale-90">🎵</button>
+                        <button id="sfxToggleBtn" onclick="toggleGameSfx()" title="Toggle sound effects" class="w-9 h-9 rounded-2xl bg-amber-950 hover:bg-amber-900 border border-amber-400/50 flex items-center justify-center text-sm transition-all shadow-md active:scale-90">🔊</button>
+                        <div class="text-right pl-1">
+                            <span class="text-[9px] uppercase font-black tracking-widest text-amber-300 block">Record</span>
+                            <span id="seasonRecordHeader" class="text-xs font-mono font-black text-emerald-300 bg-emerald-950/80 border border-emerald-400/60 px-2 py-0.5 rounded-md inline-block mt-0.5 shadow">0W - 0L</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Season Status & Stats Bar -->
+                <div class="grid grid-cols-2 gap-2.5">
+                    <div class="bg-gradient-to-br from-indigo-950 via-slate-950 to-indigo-900 border-2 border-indigo-500/60 rounded-2xl p-3 flex items-center gap-3 shadow-lg shadow-indigo-500/10">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-400 to-blue-500 flex items-center justify-center text-lg shadow-md border border-indigo-200">🏆</div>
+                        <div>
+                            <span class="text-[9px] uppercase font-black tracking-widest text-indigo-300 block">Seasons Won</span>
+                            <span id="seasonsWonDisplay" class="text-sm font-black font-mono text-indigo-200">0 / 0 Played</span>
+                        </div>
+                    </div>
+                    <div class="bg-gradient-to-br from-amber-950 via-orange-950 to-amber-900 border-2 border-amber-500/60 rounded-2xl p-3 flex items-center gap-3 shadow-lg shadow-amber-500/10">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-lg shadow-md border border-amber-200">💵</div>
+                        <div>
+                            <span class="text-[9px] uppercase font-black tracking-widest text-amber-300 block">Treasury</span>
+                            <span id="cashDisplay" class="text-sm font-black font-mono text-amber-200">$650</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Hub Navigation Grid -->
+            <main class="my-3 grid grid-cols-2 gap-3.5 flex-grow z-10">
+                <button onclick="startNextMatch()" class="col-span-2 bg-gradient-to-r from-amber-400 via-orange-500 to-yellow-500 hover:from-amber-300 hover:via-orange-400 hover:to-yellow-400 p-4.5 rounded-3xl flex items-center justify-between shadow-2xl shadow-orange-500/35 text-left transition-all duration-300 hover:scale-[1.02] active:scale-95 border-2 border-yellow-200 relative overflow-hidden group">
+                    <div class="absolute right-[-10px] bottom-[-10px] text-8xl opacity-20 group-hover:scale-125 transition-transform duration-500">🏀</div>
+                    <div class="z-10">
+                        <span class="text-[10px] font-black tracking-widest uppercase bg-slate-950 text-amber-300 border border-amber-400/50 px-2 py-0.5 rounded-md inline-block mb-1 shadow">🔥 Next Circuit Match</span>
+                        <h3 id="nextMatchHubTitle" class="text-xl font-black text-slate-950 leading-tight drop-shadow-sm">NEIGHBORHOOD CEMENT RUN</h3>
+                        <p id="nextMatchHubSub" class="text-xs font-black text-slate-900 mt-0.5">vs Concrete Crew</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-2xl bg-slate-950 flex items-center justify-center text-2xl text-amber-300 font-black shadow-inner border border-amber-400/60 z-10 group-hover:translate-x-1 transition-transform">
+                        &rarr;
+                    </div>
+                </button>
+
+                <button onclick="switchScreen('squadScreen')" class="bg-gradient-to-br from-indigo-500 via-blue-600 to-indigo-900 hover:from-indigo-400 hover:to-blue-800 p-4 rounded-3xl flex flex-col items-start justify-between h-32 text-left shadow-xl shadow-blue-500/20 transition-all duration-300 hover:scale-[1.03] active:scale-95 border-2 border-blue-300/50 relative overflow-hidden group">
+                    <div class="absolute right-[-10px] bottom-[-10px] text-6xl opacity-20 group-hover:scale-110 transition-transform pointer-events-none">👥</div>
+                    <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-lg shadow-md border border-amber-200">👥</div>
+                    <div>
+                        <h3 class="font-black text-base text-white leading-tight drop-shadow">THE SQUAD</h3>
+                        <p class="text-[10px] text-amber-200 font-extrabold mt-0.5">Lineup & Training</p>
+                    </div>
+                </button>
+
+                <button onclick="switchScreen('draftScreen')" class="bg-gradient-to-br from-amber-500 via-orange-600 to-yellow-700 hover:from-amber-400 hover:to-orange-600 p-4 rounded-3xl flex flex-col items-start justify-between h-32 text-left shadow-xl shadow-amber-500/20 transition-all duration-300 hover:scale-[1.03] active:scale-95 border-2 border-yellow-300/50 relative overflow-hidden group">
+                    <div class="absolute right-[-10px] bottom-[-10px] text-6xl opacity-20 group-hover:scale-110 transition-transform pointer-events-none">🎯</div>
+                    <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-yellow-300 to-amber-500 flex items-center justify-center text-lg shadow-md border border-white">🎯</div>
+                    <div>
+                        <h3 class="font-black text-base text-white leading-tight drop-shadow">ROOKIE DRAFT</h3>
+                        <p class="text-[10px] text-yellow-200 font-extrabold mt-0.5">Scout & Sign Prospects</p>
+                    </div>
+                </button>
+
+                <button onclick="openScheduleModal()" class="bg-gradient-to-br from-cyan-600 via-blue-700 to-indigo-900 hover:from-cyan-500 hover:to-blue-600 p-4 rounded-3xl flex flex-col items-start justify-between h-32 text-left shadow-xl shadow-cyan-500/20 transition-all duration-300 hover:scale-[1.03] active:scale-95 border-2 border-cyan-300/50 relative overflow-hidden group">
+                    <div class="absolute right-[-10px] bottom-[-10px] text-6xl opacity-20 group-hover:scale-110 transition-transform pointer-events-none">📅</div>
+                    <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-cyan-300 to-blue-500 flex items-center justify-center text-lg shadow-md border border-cyan-100">📅</div>
+                    <div>
+                        <h3 class="font-black text-base text-white leading-tight drop-shadow">CIRCUIT MAP</h3>
+                        <p class="text-[10px] text-cyan-200 font-extrabold mt-0.5">Schedule & Opponents</p>
+                    </div>
+                </button>
+
+                <button onclick="switchScreen('blockScreen')" class="bg-gradient-to-br from-emerald-500 via-teal-700 to-green-900 hover:from-emerald-400 hover:to-teal-600 p-4 rounded-3xl flex flex-col items-start justify-between h-32 text-left shadow-xl shadow-emerald-500/20 transition-all duration-300 hover:scale-[1.03] active:scale-95 border-2 border-emerald-300/50 relative overflow-hidden group">
+                    <div class="absolute right-[-10px] bottom-[-10px] text-6xl opacity-20 group-hover:scale-110 transition-transform pointer-events-none">🏗️</div>
+                    <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-300 to-teal-500 flex items-center justify-center text-lg shadow-md border border-emerald-100">🏗️</div>
+                    <div>
+                        <h3 class="font-black text-base text-white leading-tight drop-shadow">THE BLOCK</h3>
+                        <p class="text-[10px] text-emerald-200 font-extrabold mt-0.5">Court Upgrades</p>
+                    </div>
+                </button>
+
+                <button onclick="switchScreen('hustleScreen')" class="col-span-2 bg-gradient-to-br from-rose-600 via-pink-700 to-orange-800 hover:from-rose-500 hover:to-pink-600 p-4 rounded-3xl flex flex-col items-start justify-between h-28 text-left shadow-xl shadow-rose-500/25 transition-all duration-300 hover:scale-[1.02] active:scale-95 border-2 border-pink-300/50 relative overflow-hidden group">
+                    <div class="absolute right-[-10px] bottom-[-10px] text-6xl opacity-20 group-hover:scale-110 transition-transform pointer-events-none">💰</div>
+                    <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-yellow-300 via-orange-400 to-rose-500 flex items-center justify-center text-lg shadow-md border border-white">💰</div>
+                    <div>
+                        <h3 class="font-black text-base text-white leading-tight drop-shadow">THE HUSTLE</h3>
+                        <p class="text-[10px] text-yellow-200 font-extrabold mt-0.5">Sponsors, Wagers & Mixtapes</p>
+                    </div>
+                </button>
+            </main>
+
+            <footer class="w-full text-center py-2 text-[11px] text-amber-200/80 font-mono z-10 font-bold">
+                🏀 KOB DYNASTY • Made by Astrophyd 🏀
+            </footer>
+        </div>
+
+        <!-- ==================== VIEW 2: MATCH SIMULATOR ==================== -->
+        <div id="gameScreen" class="screen-view flex-col justify-between min-h-[92vh]">
+            <header class="w-full bg-slate-900/95 border-2 border-amber-500/50 p-3 rounded-2xl shadow-xl flex flex-col gap-2 z-10">
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <span id="matchPhaseBadge" class="bg-amber-400 text-slate-950 border border-yellow-200 px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider shadow">Circuit Match</span>
+                        <span id="matchQuarterDisplay" class="text-xs font-mono font-black text-amber-200">1st Half</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span id="matchPossessionsDisplay" class="text-[11px] font-mono text-cyan-300 font-black bg-cyan-950/80 px-2 py-0.5 rounded-md border border-cyan-500/40">Possession: 1 / 10</span>
+                        <button onclick="exitMatchToHub()" class="bg-rose-600 hover:bg-rose-500 text-white border border-rose-300 px-2.5 py-0.5 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all shadow">Exit Match</button>
+                    </div>
+                </div>
+
+                <!-- Scoreboard -->
+                <div class="grid grid-cols-7 items-center bg-gradient-to-r from-orange-950 via-slate-950 to-red-950 border-2 border-amber-500/60 rounded-xl p-2.5 text-center shadow-inner">
+                    <div class="col-span-3 text-left pl-2">
+                        <span id="homeTeamNameLabel" class="text-[10px] uppercase font-black text-amber-300 block truncate">The Underdogs</span>
+                        <span id="homeScoreDisplay" class="text-2xl font-black font-mono text-white">0</span>
+                    </div>
+                    <div class="col-span-1 text-amber-400 font-black text-sm animate-pulse">VS</div>
+                    <div class="col-span-3 text-right pr-2">
+                        <span id="awayTeamNameLabel" class="text-[10px] uppercase font-black text-rose-300 block truncate">Concrete Crew</span>
+                        <span id="awayScoreDisplay" class="text-2xl font-black font-mono text-white">0</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Match Court & Commentary Feed -->
+            <main class="my-3 flex flex-col gap-3 flex-grow z-10">
+                <div class="bg-slate-900/90 border-2 border-amber-500/40 rounded-2xl p-3 flex flex-col h-36 overflow-hidden shadow-inner">
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="text-[10px] uppercase font-black tracking-wider text-amber-300 flex items-center gap-1.5">🏀 Live Asphalt Commentary</span>
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+                    </div>
+                    <div id="commentaryFeed" class="flex-grow overflow-y-auto space-y-1.5 text-xs font-mono pr-1">
+                        <div class="text-amber-300 font-bold">Tip-off underway! Your ball on offense.</div>
+                    </div>
+                </div>
+
+                <!-- Tactical Playbook Controls -->
+                <div class="bg-slate-900/95 border-2 border-amber-500/50 rounded-2xl p-3 flex flex-col gap-2.5 shadow-xl">
+                    <div class="flex justify-between items-center">
+                        <div class="flex gap-1.5">
+                            <button id="tabOffenseBtn" onclick="switchPlaybookTab('offense')" class="bg-amber-400 text-slate-950 px-3 py-1 rounded-xl text-xs font-black uppercase tracking-wider transition-all shadow">⚡ Offense</button>
+                            <button id="tabDefenseBtn" onclick="switchPlaybookTab('defense')" class="bg-blue-600 text-white px-3 py-1 rounded-xl text-xs font-black uppercase tracking-wider transition-all border border-blue-400 shadow">🛡️ Defense</button>
+                        </div>
+                        <span id="activeTacticsRole" class="text-[10px] font-mono text-yellow-300 font-black uppercase bg-slate-950 px-2 py-0.5 rounded border border-amber-500/40">Your Offense Possession</span>
+                    </div>
+
+                    <!-- Offense Plays -->
+                    <div id="offensePlaysGrid" class="grid grid-cols-2 gap-2">
+                        <button onclick="executePlay('pass')" class="bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-300 hover:to-orange-400 text-slate-950 p-3 rounded-xl font-black text-xs uppercase tracking-wider shadow-lg transition-all active:scale-95 flex flex-col items-center text-center border border-yellow-200">
+                            <span>🤝 Pass</span>
+                            <span class="text-[8px] opacity-80 font-extrabold mt-0.5">High safety, reliable assist</span>
+                        </button>
+                        <button onclick="executePlay('drive_layup')" class="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-400 hover:to-amber-400 text-slate-950 p-3 rounded-xl font-black text-xs uppercase tracking-wider shadow-lg transition-all active:scale-95 flex flex-col items-center text-center border border-yellow-200">
+                            <span>🏃‍♂️ Drive & Layup</span>
+                            <span class="text-[8px] opacity-80 font-extrabold mt-0.5">Solid 2-point paint finish</span>
+                        </button>
+                        <button onclick="executePlay('shoot_3')" class="bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-300 hover:to-amber-400 text-slate-950 p-3 rounded-xl font-black text-xs uppercase tracking-wider shadow-lg transition-all active:scale-95 flex flex-col items-center text-center border border-white">
+                            <span>🎯 Contested 3</span>
+                            <span class="text-[8px] opacity-80 font-extrabold mt-0.5">High risk, big 3-pt reward</span>
+                        </button>
+                        <button onclick="executePlay('ankle_breaker')" class="bg-gradient-to-r from-amber-500 to-rose-600 hover:from-amber-400 hover:to-rose-500 text-slate-950 p-3 rounded-xl font-black text-xs uppercase tracking-wider shadow-lg transition-all active:scale-95 flex flex-col items-center text-center border border-yellow-200">
+                            <span>⚡ Ankle Breaker</span>
+                            <span class="text-[8px] opacity-80 font-extrabold mt-0.5">Flashy move for open 3</span>
+                        </button>
+                    </div>
+
+                    <!-- Defense Plays -->
+                    <div id="defensePlaysGrid" class="grid grid-cols-2 gap-2 hidden">
+                        <button onclick="executePlay('lockdown')" class="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-400 hover:to-indigo-500 text-white p-3 rounded-xl font-black text-xs uppercase tracking-wider shadow-lg transition-all active:scale-95 flex flex-col items-center text-center border border-blue-300">
+                            <span>🔒 Lockdown</span>
+                            <span class="text-[8px] opacity-80 font-extrabold mt-0.5">Tight man clamp</span>
+                        </button>
+                        <button onclick="executePlay('steal')" class="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white p-3 rounded-xl font-black text-xs uppercase tracking-wider shadow-lg transition-all active:scale-95 flex flex-col items-center text-center border border-purple-300">
+                            <span>⚡ Try to Steal</span>
+                            <span class="text-[8px] opacity-80 font-extrabold mt-0.5">Aggressive swipe for fast break</span>
+                        </button>
+                        <button onclick="executePlay('slick_foul')" class="bg-gradient-to-r from-purple-600 to-rose-600 hover:from-purple-500 hover:to-rose-500 text-white p-3 rounded-xl font-black text-xs uppercase tracking-wider shadow-lg transition-all active:scale-95 flex flex-col items-center text-center border border-pink-300">
+                            <span>🥋 Slick Foul</span>
+                            <span class="text-[8px] opacity-80 font-extrabold mt-0.5">Stops easy layup, risks foul line</span>
+                        </button>
+                        <button onclick="executePlay('trash_talk')" class="bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white p-3 rounded-xl font-black text-xs uppercase tracking-wider shadow-lg transition-all active:scale-95 flex flex-col items-center text-center border border-red-300">
+                            <span>🗣️ Trash Talk</span>
+                            <span class="text-[8px] opacity-80 font-extrabold mt-0.5">Gets in their head to cause brick</span>
+                        </button>
+                    </div>
+                </div>
+            </main>
+
+            <footer class="w-full text-center py-2 text-[11px] text-amber-200/80 font-mono z-10 font-bold">
+                CHANCE-BASED STREET HOOPS ENGINE • Made by Astrophyd
+            </footer>
+        </div>
+
+        <!-- ==================== VIEW 3: SQUAD & ROSTER ==================== -->
+        <div id="squadScreen" class="screen-view flex-col justify-between min-h-[92vh]">
+            <header class="w-full bg-slate-900/95 border-2 border-blue-500/50 p-3 rounded-2xl shadow-xl flex justify-between items-center z-10">
+                <div>
+                    <span class="text-[9px] uppercase font-black tracking-widest text-cyan-300">🏀 Roster & Lineup</span>
+                    <h1 class="text-base font-black text-white">THE SQUAD</h1>
+                </div>
+                <button onclick="switchScreen('hubScreen')" class="bg-slate-800 hover:bg-slate-700 border border-blue-400 text-xs px-3 py-1.5 rounded-xl font-bold transition-all shadow text-cyan-200">
+                    &larr; Hub
+                </button>
+            </header>
+
+            <main class="my-3 flex flex-col gap-3 flex-grow overflow-y-auto z-10">
+                <div class="text-xs text-amber-200/90 px-1 font-semibold">Manage your active squad and train ballers to boost match performance ratings.</div>
+                <div id="squadListContainer" class="flex flex-col gap-2.5">
+                    <!-- Populated dynamically -->
+                </div>
+            </main>
+
+            <footer class="w-full text-center py-2 text-[11px] text-amber-200/80 font-mono z-10 font-bold">
+                TRAIN BALLERS TO BOOST CHANCE SUCCESS • Made by Astrophyd
+            </footer>
+        </div>
+
+        <!-- ==================== VIEW 4: ROOKIE DRAFT & MARKET ==================== -->
+        <div id="draftScreen" class="screen-view flex-col justify-between min-h-[92vh]">
+            <header class="w-full bg-slate-900/95 border-2 border-amber-500/50 p-3 rounded-2xl shadow-xl flex justify-between items-center z-10">
+                <div>
+                    <span class="text-[9px] uppercase font-black tracking-widest text-yellow-300">🎯 Prospect Scouting & Draft Board</span>
+                    <h1 class="text-base font-black text-white">ROOKIE DRAFT SYSTEM</h1>
+                </div>
+                <button onclick="switchScreen('hubScreen')" class="bg-slate-800 hover:bg-slate-700 border border-amber-400 text-xs px-3 py-1.5 rounded-xl font-bold transition-all shadow text-amber-200">
+                    &larr; Hub
+                </button>
+            </header>
+
+            <main class="my-3 flex flex-col gap-3 flex-grow overflow-y-auto z-10">
+                <div class="text-xs text-amber-200/90 px-1 font-semibold">Select prospects across draft rounds: 1st Round (Elite), 2nd Round (Solid), 3rd Round (Developmental).</div>
+                
+                <!-- Draft Round Selection Tabs -->
+                <div class="grid grid-cols-3 gap-2">
+                    <button id="draftTab1" onclick="switchDraftRound(1)" class="bg-amber-400 text-slate-950 font-black py-2 px-2 rounded-xl text-[11px] uppercase tracking-wider shadow transition-all border border-yellow-200">
+                        1st Round (4 Elite)
+                    </button>
+                    <button id="draftTab2" onclick="switchDraftRound(2)" class="bg-slate-800 text-amber-200 font-black py-2 px-2 rounded-xl text-[11px] uppercase tracking-wider shadow transition-all border border-amber-500/50">
+                        2nd Round (5 Solid)
+                    </button>
+                    <button id="draftTab3" onclick="switchDraftRound(3)" class="bg-slate-800 text-amber-200 font-black py-2 px-2 rounded-xl text-[11px] uppercase tracking-wider shadow transition-all border border-amber-500/50">
+                        3rd Round (7 Value)
+                    </button>
+                </div>
+
+                <div id="draftRoundContainer" class="flex flex-col gap-2.5">
+                    <!-- Populated dynamically -->
+                </div>
+            </main>
+
+            <footer class="w-full text-center py-2 text-[11px] text-amber-200/80 font-mono z-10 font-bold">
+                REINFORCE YOUR DYNASTY SQUAD THROUGH THE DRAFT • Made by Astrophyd
+            </footer>
+        </div>
+
+        <!-- ==================== VIEW 5: THE BLOCK (COURT UPGRADES) ==================== -->
+        <div id="blockScreen" class="screen-view flex-col justify-between min-h-[92vh]">
+            <header class="w-full bg-slate-900/95 border-2 border-emerald-500/50 p-3 rounded-2xl shadow-xl flex justify-between items-center z-10">
+                <div>
+                    <span class="text-[9px] uppercase font-black tracking-widest text-emerald-300">🏗️ Neighborhood Workshop</span>
+                    <h1 class="text-base font-black text-white">THE BLOCK UPGRADES</h1>
+                </div>
+                <button onclick="switchScreen('hubScreen')" class="bg-slate-800 hover:bg-slate-700 border border-emerald-400 text-xs px-3 py-1.5 rounded-xl font-bold transition-all shadow text-emerald-200">
+                    &larr; Hub
+                </button>
+            </header>
+
+            <main class="my-3 flex flex-col gap-3 flex-grow overflow-y-auto z-10">
+                <div class="text-xs text-amber-200/90 px-1 font-semibold">Upgrade balls, equipment, hoops, lights, and courts to gain permanent boosts!</div>
+                <div id="upgradesListContainer" class="flex flex-col gap-2.5">
+                    <!-- Populated dynamically -->
+                </div>
+            </main>
+
+            <footer class="w-full text-center py-2 text-[11px] text-amber-200/80 font-mono z-10 font-bold">
+                INVEST IN YOUR HOME TURF • Made by Astrophyd
+            </footer>
+        </div>
+
+        <!-- ==================== VIEW 6: THE HUSTLE ==================== -->
+        <div id="hustleScreen" class="screen-view flex-col justify-between min-h-[92vh]">
+            <header class="w-full bg-slate-900/95 border-2 border-rose-500/50 p-3 rounded-2xl shadow-xl flex justify-between items-center z-10">
+                <div>
+                    <span class="text-[9px] uppercase font-black tracking-widest text-pink-300">💰 Street Cash Flow</span>
+                    <h1 class="text-base font-black text-white">THE HUSTLE</h1>
+                </div>
+                <button onclick="switchScreen('hubScreen')" class="bg-slate-800 hover:bg-slate-700 border border-rose-400 text-xs px-3 py-1.5 rounded-xl font-bold transition-all shadow text-pink-200">
+                    &larr; Hub
+                </button>
+            </header>
+
+            <main class="my-3 flex flex-col gap-3 flex-grow overflow-y-auto z-10">
+                <div class="text-xs text-amber-200/90 px-1 font-semibold">Sign sponsors, place specific high-stakes bets, and drop viral mixtapes!</div>
+                
+                <!-- Sponsors Section -->
+                <div class="bg-slate-900/90 border-2 border-purple-500/40 rounded-2xl p-4 flex flex-col gap-3 shadow-lg">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-10 h-10 rounded-xl bg-purple-500/20 border border-purple-400 flex items-center justify-center text-xl shadow">🤝</div>
+                        <div>
+                            <h3 class="font-black text-sm text-white">Brand Sponsorship</h3>
+                            <p class="text-[11px] text-purple-200">Secure corporate or street apparel backing for passive income.</p>
+                        </div>
+                    </div>
+                    <div id="sponsorSectionContainer" class="flex flex-col gap-2">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+
+                <!-- Specific Bets Section -->
+                <div class="bg-slate-900/90 border-2 border-amber-500/40 rounded-2xl p-4 flex flex-col gap-3 shadow-lg">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-400 flex items-center justify-center text-xl shadow">🎲</div>
+                        <div>
+                            <h3 class="font-black text-sm text-white">Specific Match Wagers</h3>
+                            <p class="text-[11px] text-amber-200">Select a specific high-stakes bet style for your next match.</p>
+                        </div>
+                    </div>
+                    <div id="betsSectionContainer" class="grid grid-cols-1 gap-2">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+
+                <!-- Specific Mixtapes Section -->
+                <div class="bg-slate-900/90 border-2 border-rose-500/40 rounded-2xl p-4 flex flex-col gap-3 shadow-lg">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-10 h-10 rounded-xl bg-rose-500/20 border border-rose-400 flex items-center justify-center text-xl shadow">📱</div>
+                        <div>
+                            <h3 class="font-black text-sm text-white">Record Viral Mixtapes</h3>
+                            <p class="text-[11px] text-pink-200">Choose a mixtape style to drop for immediate Hype and Cash.</p>
+                        </div>
+                    </div>
+                    <div id="mixtapeSectionContainer" class="flex flex-col gap-2">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+            </main>
+
+            <footer class="w-full text-center py-2 text-[11px] text-amber-200/80 font-mono z-10 font-bold">
+                HUSTLE HARD, OWN THE STREETS • Made by Astrophyd
+            </footer>
+        </div>
+
+        <!-- ==================== MODALS & POPUPS ==================== -->
+        <!-- Profile / Dynasty Editor Modal -->
+        <div id="profileModal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md hidden flex items-center justify-center p-4 z-50">
+            <div class="bg-slate-900 border-2 border-amber-500 w-full max-w-sm p-5 rounded-3xl shadow-2xl flex flex-col gap-4">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-sm font-black text-amber-400 uppercase tracking-wider">👑 Dynasty Profile & Avatar</h3>
+                    <button onclick="closeProfileModal()" class="text-slate-400 hover:text-white font-black text-lg">&times;</button>
+                </div>
+                <div class="flex flex-col gap-3">
+                    <div>
+                        <label class="text-[10px] uppercase font-black text-amber-300 block mb-1">Crew Name</label>
+                        <input type="text" id="dynastyNameInput" value="The Underdogs" class="w-full bg-slate-950 border-2 border-amber-500/50 rounded-xl px-3 py-2.5 text-xs text-white font-bold focus:outline-none focus:border-amber-400 shadow" />
+                    </div>
+                    <div>
+                        <label class="text-[10px] uppercase font-black text-amber-300 block mb-1">Choose Icon</label>
+                        <div class="grid grid-cols-5 gap-2" id="avatarSelectorGrid">
+                            <button onclick="selectAvatar('👑')" class="bg-slate-950 border-2 border-amber-500/50 hover:border-amber-400 p-2 rounded-xl text-xl flex items-center justify-center shadow">👑</button>
+                            <button onclick="selectAvatar('🏀')" class="bg-slate-950 border-2 border-amber-500/50 hover:border-amber-400 p-2 rounded-xl text-xl flex items-center justify-center shadow">🏀</button>
+                            <button onclick="selectAvatar('🔥')" class="bg-slate-950 border-2 border-amber-500/50 hover:border-amber-400 p-2 rounded-xl text-xl flex items-center justify-center shadow">🔥</button>
+                            <button onclick="selectAvatar('⚡')" class="bg-slate-950 border-2 border-amber-500/50 hover:border-amber-400 p-2 rounded-xl text-xl flex items-center justify-center shadow">⚡</button>
+                            <button onclick="selectAvatar('💀')" class="bg-slate-950 border-2 border-amber-500/50 hover:border-amber-400 p-2 rounded-xl text-xl flex items-center justify-center shadow">💀</button>
+                        </div>
+                    </div>
+                </div>
+                <button onclick="saveProfile()" class="w-full bg-gradient-to-r from-amber-400 to-orange-500 text-slate-950 font-black py-3 rounded-xl text-xs uppercase tracking-wider shadow-lg transition-all active:scale-95 border border-yellow-200">
+                    Save Profile
+                </button>
+            </div>
+        </div>
+
+        <!-- Circuit Schedule Modal -->
+        <div id="scheduleModal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md hidden flex items-center justify-center p-4 z-50">
+            <div class="bg-slate-900 border-2 border-cyan-500 w-full max-w-sm p-5 rounded-3xl shadow-2xl flex flex-col gap-4 max-h-[85vh]">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-sm font-black text-cyan-300 uppercase tracking-wider">📅 Circuit Opponents</h3>
+                    <button onclick="closeScheduleModal()" class="text-slate-400 hover:text-white font-black text-lg">&times;</button>
+                </div>
+                <div id="scheduleListContainer" class="flex flex-col gap-2.5 overflow-y-auto pr-1">
+                    <!-- Populated dynamically -->
+                </div>
+                <button onclick="closeScheduleModal()" class="w-full bg-slate-800 hover:bg-slate-700 text-cyan-200 border border-cyan-400/50 font-black py-2.5 rounded-xl text-xs uppercase tracking-wider transition-all shadow">
+                    Close
+                </button>
+            </div>
+        </div>
+
+        <!-- General Game Notice Modal -->
+        <div id="gameModal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md hidden flex items-center justify-center p-4 z-50">
+            <div class="bg-slate-900 border-2 border-amber-500 w-full max-w-sm p-6 rounded-3xl shadow-2xl flex flex-col gap-4 text-center">
+                <h3 id="modalTitle" class="text-base font-black text-amber-400 uppercase tracking-wider">🏀 Notice</h3>
+                <p id="modalMessage" class="text-xs text-amber-100 leading-relaxed font-medium">Message content goes here...</p>
+                <button onclick="closeModal()" class="w-full bg-gradient-to-r from-amber-400 to-orange-500 text-slate-950 font-black py-3 rounded-xl text-xs uppercase tracking-wider shadow-lg transition-all active:scale-95 border border-yellow-200">
+                    Continue
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        let dynastyName = "KOB Dynasty";
+        let dynastyAvatar = "👑";
+        let cash = 650;
+        let rep = 120;
+        let wins = 0;
+        let losses = 0;
+        let seasonsWon = 0;
+        let seasonsPlayed = 0;
+        let difficultyMultiplier = 1.0;
+        let currentOpponentIndex = 0;
+        let musicActive = false;
+        let sfxActive = true;
+        let audioCtx = null;
+        let activeSponsor = null;
+        let activeBet = null;
+
+        // Active Match State Variables (Fixes ReferenceError)
+        let inActiveMatch = false;
+        let matchHomeScore = 0;
+        let matchAwayScore = 0;
+        let matchPossession = 1;
+        let maxPossessions = 10;
+        let matchHalf = 1;
+        let currentPossessionRole = 'offense';
+        let commentaryLogs = [];
+
+        // Squad roster
+        let squad = [
+            { id: 1, name: "Marcus 'Flash' Vance", role: "Starter", shot: 82, defense: 75, trainingLevel: 1 },
+            { id: 2, name: "Tariq 'Brickwall' Jones", role: "Starter", shot: 70, defense: 88, trainingLevel: 1 },
+            { id: 3, name: "Deion 'Sniper' Miller", role: "Starter", shot: 86, defense: 68, trainingLevel: 1 }
+        ];
+
+        // Rookie Draft Market - Structured Rounds (4 1st round, 5 2nd round, 7 3rd round)
+        let activeDraftRound = 1;
+        let draftPool = {
+            1: [
+                { id: 101, name: "Zack 'Crossover' Taylor", shot: 90, defense: 80, price: 650, drafted: false },
+                { id: 102, name: "Kobe 'Lockdown' Brooks", shot: 78, defense: 94, price: 600, drafted: false },
+                { id: 103, name: "Damon 'Air' Reed", shot: 93, defense: 70, price: 700, drafted: false },
+                { id: 104, name: "Jaxson 'The Matrix' Ward", shot: 87, defense: 86, price: 750, drafted: false }
+            ],
+            2: [
+                { id: 201, name: "Miles 'Sniper' Henderson", shot: 83, defense: 65, price: 400, drafted: false },
+                { id: 202, name: "Trey 'Clamps' Miller", shot: 70, defense: 85, price: 380, drafted: false },
+                { id: 203, name: "Ronnie 'Flash' Cole", shot: 80, defense: 74, price: 420, drafted: false },
+                { id: 204, name: "Dominic 'Beast' King", shot: 66, defense: 88, price: 450, drafted: false },
+                { id: 205, name: "Chase 'Buckets' Turner", shot: 82, defense: 68, price: 390, drafted: false }
+            ],
+            3: [
+                { id: 301, name: "Leo 'Hustle' Scott", shot: 72, defense: 70, price: 200, drafted: false },
+                { id: 302, name: "Evan 'Grit' Parker", shot: 67, defense: 76, price: 180, drafted: false },
+                { id: 303, name: "Caleb 'Spark' Young", shot: 75, defense: 62, price: 190, drafted: false },
+                { id: 304, name: "Nate 'Brick' O'Connor", shot: 62, defense: 80, price: 170, drafted: false },
+                { id: 305, name: "Andre 'Smooth' Vance", shot: 77, defense: 60, price: 210, drafted: false },
+                { id: 306, name: "Logan 'Speedy' Cruz", shot: 73, defense: 64, price: 195, drafted: false },
+                { id: 307, name: "Seth 'Anchor' Stone", shot: 60, defense: 82, price: 220, drafted: false }
+            ]
+        };
+
+        // Expanded Court Upgrades (The Block)
+        let upgrades = [
+            { id: 'balls', name: "Official Leather Game Balls", level: 1, cost: 200, desc: "+5% shooting precision across all offensive plays." },
+            { id: 'equipment', name: "Pro Training Gear & Weights", level: 1, cost: 300, desc: "+5 defense rating across all squad members." },
+            { id: 'hoops', name: "Professional Breakaway Double Rims", level: 1, cost: 400, desc: "+10% Offense success rate." },
+            { id: 'lights', name: "Stadium Floodlights & Neon", level: 1, cost: 350, desc: "+30 Hype (REP) reward per win." },
+            { id: 'courts', name: "Resurfaced Shock-Absorbent Court", level: 1, cost: 600, desc: "+$200 Cash payout bonus per win & injury prevention." }
+        ];
+
+        // Specific Sponsors (The Hustle)
+        let availableSponsors = [
+            { id: 'sp1', name: "Venice Ball Apparel", payout: 100, reqRep: 50 },
+            { id: 'sp2', name: "Asphalt Kings Energy", payout: 250, reqRep: 150 },
+            { id: 'sp3', name: "Street Dynasty Global", payout: 500, reqRep: 300 }
+        ];
+
+        // Specific Bets (The Hustle)
+        let availableBets = [
+            { id: 'bet1', name: "Safe Wager ($100 stake, 1.5x payout)", stake: 100, mult: 1.5 },
+            { id: 'bet2', name: "High Roller ($300 stake, 2.5x payout)", stake: 300, mult: 2.5 },
+            { id: 'bet3', name: "All-In Street Gamble ($600 stake, 4.0x payout)", stake: 600, mult: 4.0 }
+        ];
+
+        // Specific Mixtapes (The Hustle)
+        let mixtapes = [
+            { id: 'mix1', name: "Crossover Highlights Reel", cashEarn: 100, repEarn: 30 },
+            { id: 'mix2', name: "Dunk Contest Mixtape", cashEarn: 250, repEarn: 75 },
+            { id: 'mix3', name: "Full Street Documentary", cashEarn: 500, repEarn: 160 }
+        ];
+
+        // Circuit Opponents Schedule
+        const baseOpponents = [
+            { name: "Concrete Crew", subtitle: "Local Neighborhood Asphalt", cashReward: 400, repReward: 50, statBoost: 0 },
+            { name: "Parkside Ballers", subtitle: "Parkside Tournament Circuit", cashReward: 750, repReward: 90, statBoost: 5 },
+            { name: "Downtown Elites", subtitle: "Downtown City Showcase", cashReward: 1200, repReward: 150, statBoost: 10 },
+            { name: "Court X Legends", subtitle: "Championship Finals", cashReward: 2500, repReward: 300, statBoost: 15 }
+        ];
+
+        // Save & Load state functions
+        function saveGameState() {
+            try {
+                const state = {
+                    dynastyName, dynastyAvatar, cash, rep, wins, losses, seasonsWon, seasonsPlayed, difficultyMultiplier, currentOpponentIndex,
+                    squad, draftPool, upgrades, activeSponsor: activeSponsor ? activeSponsor.id : null,
+                    matchHomeScore, matchAwayScore, matchPossession, matchHalf, currentPossessionRole,
+                    inActiveMatch, commentaryLogs
+                };
+                localStorage.setItem('underdog_dynasty_save', JSON.stringify(state));
+            } catch(e) {}
+        }
+
+        function loadGameState() {
+            try {
+                const saved = localStorage.getItem('underdog_dynasty_save');
+                if (saved) {
+                    const data = JSON.parse(saved);
+                    dynastyName = data.dynastyName ?? dynastyName;
+                    dynastyAvatar = data.dynastyAvatar ?? dynastyAvatar;
+                    cash = data.cash ?? cash;
+                    rep = data.rep ?? rep;
+                    wins = data.wins ?? wins;
+                    losses = data.losses ?? losses;
+                    seasonsWon = data.seasonsWon ?? seasonsWon;
+                    seasonsPlayed = data.seasonsPlayed ?? seasonsPlayed;
+                    difficultyMultiplier = data.difficultyMultiplier ?? difficultyMultiplier;
+                    currentOpponentIndex = data.currentOpponentIndex ?? currentOpponentIndex;
+                    if (data.squad) squad = data.squad;
+                    if (data.draftPool) draftPool = data.draftPool;
+                    if (data.upgrades) upgrades = data.upgrades;
+                    if (data.activeSponsor) {
+                        activeSponsor = availableSponsors.find(s => s.id === data.activeSponsor) || null;
+                    }
+                    matchHomeScore = data.matchHomeScore ?? 0;
+                    matchAwayScore = data.matchAwayScore ?? 0;
+                    matchPossession = data.matchPossession ?? 1;
+                    matchHalf = data.matchHalf ?? 1;
+                    currentPossessionRole = data.currentPossessionRole ?? 'offense';
+                    inActiveMatch = data.inActiveMatch ?? false;
+                    commentaryLogs = data.commentaryLogs ?? [];
+
+                    if (inActiveMatch && currentOpponentIndex < baseOpponents.length) {
+                        restoreActiveMatchState();
+                    }
+                }
+            } catch(e) {}
+        }
+
+        function restoreActiveMatchState() {
+            const opp = baseOpponents[currentOpponentIndex];
+            document.getElementById('homeTeamNameLabel').textContent = dynastyName;
+            document.getElementById('awayTeamNameLabel').textContent = `${opp.name} (Diff: ${difficultyMultiplier.toFixed(1)}x)`;
+            document.getElementById('homeScoreDisplay').textContent = matchHomeScore;
+            document.getElementById('awayScoreDisplay').textContent = matchAwayScore;
+            document.getElementById('matchPhaseBadge').textContent = `Match ${currentOpponentIndex + 1}`;
+            document.getElementById('matchQuarterDisplay').textContent = matchHalf === 1 ? "1st Half" : "2nd Half";
+            document.getElementById('matchPossessionsDisplay').textContent = `Possession: ${Math.min(matchPossession, maxPossessions)} / 10`;
+
+            const feed = document.getElementById('commentaryFeed');
+            if (commentaryLogs.length > 0) {
+                feed.innerHTML = commentaryLogs.join('');
+            } else {
+                feed.innerHTML = `<div class="text-amber-400 font-bold">Match resumed against ${opp.name}.</div>`;
+            }
+            switchPlaybookTab(currentPossessionRole, true);
+            switchScreen('gameScreen');
+        }
+
+        function exitMatchToHub() {
+            inActiveMatch = false;
+            saveGameState();
+            switchScreen('hubScreen');
+        }
+
+        function playTone(freq, duration, type = 'sine') {
+            if (!sfxActive) return;
+            try {
+                if (!audioCtx) {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+                let osc = audioCtx.createOscillator();
+                let gain = audioCtx.createGain();
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + duration);
+            } catch(e) {}
+        }
+
+        function toggleGameMusic() {
+            musicActive = !musicActive;
+            const btn = document.getElementById('musicToggleBtn');
+            btn.textContent = musicActive ? "🎶" : "🎵";
+            btn.classList.toggle('bg-amber-500/30', musicActive);
+            btn.classList.toggle('border-amber-400', musicActive);
+            playTone(440, 0.1);
+        }
+
+        function toggleGameSfx() {
+            sfxActive = !sfxActive;
+            const btn = document.getElementById('sfxToggleBtn');
+            btn.textContent = sfxActive ? "🔊" : "🔇";
+            btn.classList.toggle('bg-amber-500/30', sfxActive);
+            playTone(587.33, 0.1);
+        }
+
+        function switchScreen(screenId) {
+            document.querySelectorAll('.screen-view').forEach(el => el.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+            playTone(523.25, 0.08);
+
+            if (screenId === 'squadScreen') renderSquadList();
+            if (screenId === 'draftScreen') renderDraftMarket();
+            if (screenId === 'blockScreen') renderUpgradesList();
+            if (screenId === 'hustleScreen') renderHustleScreen();
+            updateHubUI();
+        }
+
+        function updateHubUI() {
+            const dynastyTitleEl = document.getElementById('dynastyTitle');
+            if (dynastyTitleEl) dynastyTitleEl.textContent = dynastyName.toUpperCase();
+
+            const dynastyAvatarIconEl = document.getElementById('dynastyAvatarIcon');
+            if (dynastyAvatarIconEl) dynastyAvatarIconEl.textContent = dynastyAvatar;
+
+            const cashDisplayEl = document.getElementById('cashDisplay');
+            if (cashDisplayEl) cashDisplayEl.textContent = `$${cash}`;
+
+            const repDisplayEl = document.getElementById('repDisplay');
+            if (repDisplayEl) repDisplayEl.textContent = `${rep} REP`;
+
+            const seasonRecordHeaderEl = document.getElementById('seasonRecordHeader');
+            if (seasonRecordHeaderEl) seasonRecordHeaderEl.textContent = `${wins}W - ${losses}L`;
+
+            const seasonsWonDisplayEl = document.getElementById('seasonsWonDisplay');
+            if (seasonsWonDisplayEl) seasonsWonDisplayEl.textContent = `${seasonsWon} / ${seasonsPlayed} Played`;
+
+            const nextMatchHubTitleEl = document.getElementById('nextMatchHubTitle');
+            const nextMatchHubSubEl = document.getElementById('nextMatchHubSub');
+
+            if (currentOpponentIndex < baseOpponents.length) {
+                const opp = baseOpponents[currentOpponentIndex];
+                if (nextMatchHubTitleEl) nextMatchHubTitleEl.textContent = opp.name.toUpperCase();
+                if (nextMatchHubSubEl) nextMatchHubSubEl.textContent = `vs ${opp.name} (${opp.subtitle}) - Diff: ${difficultyMultiplier.toFixed(1)}x`;
+            } else {
+                if (nextMatchHubTitleEl) nextMatchHubTitleEl.textContent = "NEW SEASON READY!";
+                if (nextMatchHubSubEl) nextMatchHubSubEl.textContent = `Start Season #${seasonsPlayed + 1} (Harder Opponents)`;
+            }
+        }
+
+        function openProfileModal() {
+            document.getElementById('dynastyNameInput').value = dynastyName;
+            document.getElementById('profileModal').classList.remove('hidden');
+        }
+        function closeProfileModal() {
+            document.getElementById('profileModal').classList.add('hidden');
+        }
+        function selectAvatar(icon) {
+            dynastyAvatar = icon;
+            playTone(659.25, 0.1);
+        }
+        function saveProfile() {
+            const val = document.getElementById('dynastyNameInput').value.trim();
+            if (val) dynastyName = val;
+            closeProfileModal();
+            updateHubUI();
+            playTone(783.99, 0.15);
+        }
+
+        function openScheduleModal() {
+            const container = document.getElementById('scheduleListContainer');
+            container.innerHTML = '';
+            baseOpponents.forEach((opp, idx) => {
+                let statusBadge = '';
+                if (idx < currentOpponentIndex) statusBadge = '<span class="text-[9px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 px-2 py-0.5 rounded font-bold">CONQUERED</span>';
+                else if (idx === currentOpponentIndex) statusBadge = '<span class="text-[9px] bg-amber-400 text-slate-950 px-2 py-0.5 rounded font-black shadow">UP NEXT</span>';
+                else statusBadge = '<span class="text-[9px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded font-bold">LOCKED</span>';
+
+                container.innerHTML += `
+                    <div class="bg-slate-950 border-2 border-cyan-500/30 rounded-2xl p-3 flex justify-between items-center text-xs shadow">
+                        <div>
+                            <span class="font-black text-white block">${opp.name}</span>
+                            <span class="text-[10px] text-cyan-200">${opp.subtitle} (+${Math.round(opp.statBoost * difficultyMultiplier)} Diff Boost)</span>
+                        </div>
+                        ${statusBadge}
+                    </div>
+                `;
+            });
+            document.getElementById('scheduleModal').classList.remove('hidden');
+        }
+        function closeScheduleModal() {
+            document.getElementById('scheduleModal').classList.add('hidden');
+        }
+
+        function openModal(title, msg) {
+            document.getElementById('modalTitle').textContent = "🏀 " + title;
+            document.getElementById('modalMessage').textContent = msg;
+            document.getElementById('gameModal').classList.remove('hidden');
+            playTone(523.25, 0.15);
+        }
+        function closeModal() {
+            document.getElementById('gameModal').classList.add('hidden');
+        }
+
+        function startNextMatch() {
+            if (currentOpponentIndex >= baseOpponents.length) {
+                // Season completed! Start a new season automatically or prompt new season
+                seasonsWon++;
+                seasonsPlayed++;
+                difficultyMultiplier += 0.25; // 25% harder next season
+                currentOpponentIndex = 0; // Reset circuit schedule
+                saveGameState();
+                updateHubUI();
+                openModal("Season Crowned & Reset!", `Season completed! You won the championship. Starting Season #${seasonsPlayed + 1} where all opponents are ${Math.round((difficultyMultiplier - 1) * 100)}% tougher!`);
+                return;
+            }
+
+            matchHomeScore = 0;
+            matchAwayScore = 0;
+            matchPossession = 1;
+            matchHalf = 1;
+            currentPossessionRole = 'offense';
+            inActiveMatch = true;
+
+            const opp = baseOpponents[currentOpponentIndex];
+            document.getElementById('homeTeamNameLabel').textContent = dynastyName;
+            document.getElementById('awayTeamNameLabel').textContent = `${opp.name} (${difficultyMultiplier.toFixed(1)}x)`;
+            document.getElementById('homeScoreDisplay').textContent = "0";
+            document.getElementById('awayScoreDisplay').textContent = "0";
+            document.getElementById('matchPhaseBadge').textContent = `Match ${currentOpponentIndex + 1}`;
+            document.getElementById('matchQuarterDisplay').textContent = "1st Half";
+            document.getElementById('matchPossessionsDisplay').textContent = `Possession: 1 / 10`;
+
+            const feed = document.getElementById('commentaryFeed');
+            commentaryLogs = [`<div class="text-amber-300 font-bold">Tip-off against ${opp.name} (Season Diff: ${difficultyMultiplier.toFixed(1)}x)! You have the ball on offense. Choose an offensive play.</div>`];
+            feed.innerHTML = commentaryLogs[0];
+
+            switchPlaybookTab('offense', true);
+            switchScreen('gameScreen');
+            saveGameState();
+        }
+
+        function switchPlaybookTab(tab, force = false) {
+            if (!force && tab !== currentPossessionRole) {
+                const roleName = currentPossessionRole === 'offense' ? 'Offense' : 'Defense';
+                openModal("Possession Restriction", `You currently have the ball on ${currentPossessionRole.toUpperCase()}. You must select ${roleName} plays right now!`);
+                return;
+            }
+
+            const offBtn = document.getElementById('tabOffenseBtn');
+            const defBtn = document.getElementById('tabDefenseBtn');
+            const offGrid = document.getElementById('offensePlaysGrid');
+            const defGrid = document.getElementById('defensePlaysGrid');
+            const roleLbl = document.getElementById('activeTacticsRole');
+
+            if (tab === 'offense') {
+                offBtn.className = "bg-amber-400 text-slate-950 px-3 py-1 rounded-xl text-xs font-black uppercase tracking-wider transition-all shadow";
+                defBtn.className = "bg-slate-800 text-slate-300 px-3 py-1 rounded-xl text-xs font-black uppercase tracking-wider transition-all border border-slate-700";
+                offGrid.classList.remove('hidden');
+                defGrid.classList.add('hidden');
+                roleLbl.textContent = "Your Offense Possession";
+            } else {
+                defBtn.className = "bg-blue-600 text-white px-3 py-1 rounded-xl text-xs font-black uppercase tracking-wider transition-all shadow border border-blue-400";
+                offBtn.className = "bg-slate-800 text-slate-300 px-3 py-1 rounded-xl text-xs font-black uppercase tracking-wider transition-all border border-slate-700";
+                defGrid.classList.remove('hidden');
+                offGrid.classList.add('hidden');
+                roleLbl.textContent = "Your Defense Possession";
+            }
+            playTone(440, 0.06);
+        }
+
+        function executePlay(playType) {
+            if (matchPossession > maxPossessions) return;
+
+            const isOffensePlay = ['pass', 'drive_layup', 'shoot_3', 'ankle_breaker'].includes(playType);
+            const isDefensePlay = ['lockdown', 'steal', 'slick_foul', 'trash_talk'].includes(playType);
+
+            if (currentPossessionRole === 'offense' && !isOffensePlay) {
+                openModal("Invalid Play", "You have the ball on offense! You cannot select defense plays during your own possession.");
+                return;
+            }
+            if (currentPossessionRole === 'defense' && !isDefensePlay) {
+                openModal("Invalid Play", "The opponent has the ball! You must select defense plays to stop them.");
+                return;
+            }
+
+            const feed = document.getElementById('commentaryFeed');
+            const starters = squad.filter(s => s.role === 'Starter');
+            
+            const ballsLvl = upgrades.find(u => u.id === 'balls').level - 1;
+            const equipLvl = upgrades.find(u => u.id === 'equipment').level - 1;
+            const hoopsLvl = upgrades.find(u => u.id === 'hoops').level - 1;
+
+            const opp = baseOpponents[currentOpponentIndex];
+            const oppDefensePenalty = (opp.statBoost * difficultyMultiplier) * 0.005;
+            const oppOffenseBoost = (opp.statBoost * difficultyMultiplier) * 0.006;
+
+            const avgShot = (starters.reduce((acc, s) => acc + s.shot, 0) / starters.length) + (ballsLvl * 3) + (hoopsLvl * 2);
+            const avgDef = (starters.reduce((acc, s) => acc + s.defense, 0) / starters.length) + (equipLvl * 4);
+            const offenseBonus = (hoopsLvl * 0.10 + (ballsLvl * 0.05)) - oppDefensePenalty;
+
+            let playSuccess = false;
+            let ptsEarned = 0;
+            let commentaryMsg = "";
+
+            if (playType === 'pass') {
+                let successChance = 0.75 + offenseBonus;
+                playSuccess = Math.random() < successChance;
+                ptsEarned = 2;
+                commentaryMsg = playSuccess 
+                    ? `🤝 Crisp extra pass across the arc found an open teammate for an easy jumper (+2)!`
+                    : `❌ Pass intercepted in heavy traffic by the tougher defense! Turnover.`;
+            } 
+            else if (playType === 'drive_layup') {
+                let successChance = 0.68 + offenseBonus;
+                playSuccess = Math.random() < successChance;
+                ptsEarned = 2;
+                commentaryMsg = playSuccess 
+                    ? `🏃‍♂️ Slicing drive through the paint, finger-roll layup drops softly off the glass (+2)!`
+                    : `❌ Drive bottled up by elite interior defense! Swatted away.`;
+            } 
+            else if (playType === 'shoot_3') {
+                let successChance = 0.38 + (offenseBonus * 0.8);
+                playSuccess = Math.random() < successChance;
+                ptsEarned = 3;
+                commentaryMsg = playSuccess 
+                    ? `🎯 INCREDIBLE! Deep contested 3-pointer splashed right through the net (+3)!`
+                    : `❌ Contested 3-pointer clanked hard off the back iron against tight closeout.`;
+            } 
+            else if (playType === 'ankle_breaker') {
+                let successChance = 0.45 + (offenseBonus * 0.9);
+                playSuccess = Math.random() < successChance;
+                ptsEarned = 3;
+                commentaryMsg = playSuccess 
+                    ? `⚡ ANKLE BREAKER! Defender slipped, wide open 3-pointer drained cleanly (+3)!`
+                    : `❌ Defensive recovery stayed right with your crossover move. Turnover!`;
+            }
+            else if (playType === 'lockdown') {
+                let stopChance = 0.55 + ((avgDef - 60) * 0.005) - oppOffenseBoost;
+                playSuccess = Math.random() < stopChance;
+                commentaryMsg = playSuccess 
+                    ? `🔒 Tight lockdown defense! Forced a tough contested brick by the opponent.`
+                    : `🏀 Skilled opponent shook off the lockdown defense for a slick score (+2).`;
+            }
+            else if (playType === 'steal') {
+                let stopChance = 0.42 + ((avgDef - 60) * 0.006) - oppOffenseBoost;
+                playSuccess = Math.random() < stopChance;
+                commentaryMsg = playSuccess 
+                    ? `⚡ Lightning-fast steal on the dribble! Clean forced turnover and stop.`
+                    : `🏀 Reached in for the steal and got beaten by quick handles for an easy layup (+2).`;
+            }
+            else if (playType === 'slick_foul') {
+                let stopChance = 0.70 - (oppOffenseBoost * 0.5);
+                playSuccess = Math.random() < stopChance;
+                commentaryMsg = playSuccess 
+                    ? `🥋 Strategic slick foul stopped a guaranteed fast-break layup. Successful defensive stop!`
+                    : `🏀 Slick foul called shooting! Opponent hits free throws (+2).`;
+            }
+            else if (playType === 'trash_talk') {
+                let stopChance = 0.50 + ((avgDef - 60) * 0.004) - oppOffenseBoost;
+                playSuccess = Math.random() < stopChance;
+                commentaryMsg = playSuccess 
+                    ? `🗣️ Heavy trash talk got right in their head, causing an airball jumper!`
+                    : `🏀 Trash talk backfired! Opponent fueled up and drained a deep shot (+2).`;
+            }
+
+            if (isOffensePlay) {
+                if (playSuccess) {
+                    matchHomeScore += ptsEarned;
+                    playTone(659.25, 0.2);
+                } else {
+                    playTone(200, 0.2);
+                }
+                currentPossessionRole = 'defense';
+                switchPlaybookTab('defense', true);
+                commentaryMsg += ` Possession switches to Defense!`;
+            } else {
+                if (playSuccess) {
+                    playTone(523.25, 0.2);
+                } else {
+                    matchAwayScore += 2;
+                    playTone(150, 0.2);
+                }
+                currentPossessionRole = 'offense';
+                switchPlaybookTab('offense', true);
+                matchPossession++;
+                commentaryMsg += ` Possession switches back to your Offense!`;
+            }
+
+            document.getElementById('homeScoreDisplay').textContent = matchHomeScore;
+            document.getElementById('awayScoreDisplay').textContent = matchAwayScore;
+            feed.innerHTML += `<div class="${playSuccess ? 'text-emerald-300 font-bold' : 'text-rose-300'}">${commentaryMsg}</div>`;
+            feed.scrollTop = feed.scrollHeight;
+
+            if (matchPossession > 6) {
+                matchHalf = 2;
+                document.getElementById('matchQuarterDisplay').textContent = "2nd Half";
+            }
+            document.getElementById('matchPossessionsDisplay').textContent = `Possession: ${Math.min(matchPossession, maxPossessions)} / 10`;
+
+            if (matchPossession > maxPossessions) {
+                setTimeout(endMatch, 800);
+            } else {
+                saveGameState();
+            }
+        }
+
+        function endMatch() {
+            inActiveMatch = false;
+            const opp = baseOpponents[currentOpponentIndex];
+            const won = matchHomeScore >= matchAwayScore;
+
+            let cashReward = Math.round(opp.cashReward * (1 + (difficultyMultiplier - 1) * 0.5));
+            let repReward = Math.round(opp.repReward * (1 + (difficultyMultiplier - 1) * 0.5));
+
+            const lightsUpgrade = upgrades.find(u => u.id === 'lights').level;
+            const courtsUpgrade = upgrades.find(u => u.id === 'courts').level;
+
+            if (won) {
+                wins++;
+                cashReward += (courtsUpgrade - 1) * 200;
+                repReward += (lightsUpgrade - 1) * 30;
+
+                if (activeSponsor) {
+                    cashReward += activeSponsor.payout;
+                }
+
+                if (activeBet) {
+                    let betEarnings = Math.floor(activeBet.stake * activeBet.mult);
+                    cashReward += betEarnings;
+                    activeBet = null;
+                }
+
+                cash += cashReward;
+                rep += repReward;
+                currentOpponentIndex++;
+
+                if (currentOpponentIndex >= baseOpponents.length) {
+                    seasonsWon++;
+                    seasonsPlayed++;
+                    difficultyMultiplier += 0.25; // Increase difficulty for next season
+                    currentOpponentIndex = 0; // Reset schedule for the new season loop
+                    openModal("Season Completed & Won!", `Incredible dynasty run! You won Season #${seasonsPlayed}. Starting a new season where opponents are ${Math.round((difficultyMultiplier - 1) * 100)}% tougher! Earned $${cashReward} and +${repReward} REP.`);
+                } else {
+                    openModal("Victory!", `You defeated ${opp.name} (${matchHomeScore} - ${matchAwayScore})! Earned $${cashReward} and +${repReward} REP.`);
+                }
+            } else {
+                losses++;
+                seasonsPlayed++; // count attempted season/match run
+                if (activeBet) {
+                    cash = Math.max(0, cash - activeBet.stake);
+                    activeBet = null;
+                }
+                openModal("Tough Defeat", `Fought hard against ${difficultyMultiplier.toFixed(1)}x difficulty, but ${opp.name} took the win (${matchAwayScore} - ${matchHomeScore}). Upgrade your squad and try again!`);
+            }
+
+            saveGameState();
+            switchScreen('hubScreen');
+        }
+
+        function renderSquadList() {
+            const container = document.getElementById('squadListContainer');
+            container.innerHTML = '';
+            squad.forEach(baller => {
+                container.innerHTML += `
+                    <div class="bg-slate-900 border-2 border-indigo-500/40 rounded-2xl p-3 flex justify-between items-center text-xs shadow">
+                        <div>
+                            <span class="font-black text-white block">${baller.name}</span>
+                            <span class="text-[10px] text-cyan-200 font-mono">Shot: ${baller.shot} | Def: ${baller.defense} | Role: ${baller.role}</span>
+                        </div>
+                        <button onclick="trainBaller(${baller.id})" class="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-400 hover:to-indigo-500 text-white font-black px-3 py-1.5 rounded-xl text-[10px] uppercase shadow transition-all active:scale-95 border border-blue-300">
+                            Train ($150)
+                        </button>
+                    </div>
+                `;
+            });
+        }
+
+        function trainBaller(id) {
+            const baller = squad.find(s => s.id === id);
+            if (cash >= 150) {
+                cash -= 150;
+                baller.shot += 3;
+                baller.defense += 3;
+                renderSquadList();
+                updateHubUI();
+                saveGameState();
+                openModal("Training Complete", `${baller.name} trained hard! Attributes increased.`);
+            } else {
+                openModal("Insufficient Cash", "You need $150 in your treasury to train this baller.");
+            }
+        }
+
+        function switchDraftRound(round) {
+            activeDraftRound = round;
+            for (let i = 1; i <= 3; i++) {
+                const btn = document.getElementById(`draftTab${i}`);
+                if (i === round) {
+                    btn.className = "bg-amber-400 text-slate-950 font-black py-2 px-2 rounded-xl text-[11px] uppercase tracking-wider shadow transition-all border border-yellow-200";
+                } else {
+                    btn.className = "bg-slate-800 text-amber-200 font-black py-2 px-2 rounded-xl text-[11px] uppercase tracking-wider shadow transition-all border border-amber-500/50";
+                }
+            }
+            renderDraftMarket();
+            playTone(440, 0.05);
+        }
+
+        function renderDraftMarket() {
+            const container = document.getElementById('draftRoundContainer');
+            container.innerHTML = '';
+            const prospects = draftPool[activeDraftRound];
+
+            if (!prospects || prospects.every(p => p.drafted)) {
+                container.innerHTML = `<div class="text-center text-amber-200/70 py-8 text-xs font-mono">All prospects in Round ${activeDraftRound} have been drafted!</div>`;
+                return;
+            }
+
+            prospects.forEach(fa => {
+                if (fa.drafted) return;
+                container.innerHTML += `
+                    <div class="bg-slate-900 border-2 border-amber-500/40 rounded-2xl p-3 flex justify-between items-center text-xs shadow">
+                        <div>
+                            <span class="font-black text-white block">${fa.name}</span>
+                            <span class="text-[10px] text-amber-200 font-mono">Shot: ${fa.shot} | Def: ${fa.defense}</span>
+                        </div>
+                        <button onclick="draftProspect(${activeDraftRound}, ${fa.id})" class="bg-gradient-to-r from-amber-400 to-orange-500 text-slate-950 font-black px-3 py-1.5 rounded-xl text-[10px] uppercase shadow transition-all active:scale-95 border border-yellow-200">
+                            Draft ($${fa.price})
+                        </button>
+                    </div>
+                `;
+            });
+        }
+
+        function draftProspect(round, id) {
+            const prospects = draftPool[round];
+            const fa = prospects.find(p => p.id === id);
+            if (fa && !fa.drafted) {
+                if (cash >= fa.price) {
+                    cash -= fa.price;
+                    fa.drafted = true;
+                    squad.push({ id: fa.id, name: fa.name, role: "Bench", shot: fa.shot, defense: fa.defense, trainingLevel: 1 });
+                    renderDraftMarket();
+                    updateHubUI();
+                    saveGameState();
+                    openModal("Prospect Drafted!", `${fa.name} was successfully drafted into your squad!`);
+                } else {
+                    openModal("Insufficient Funds", "You don't have enough cash in your treasury to draft this prospect.");
+                }
+            }
+        }
+
+        function renderUpgradesList() {
+            const container = document.getElementById('upgradesListContainer');
+            container.innerHTML = '';
+            upgrades.forEach(upg => {
+                const totalCost = upg.cost * upg.level;
+                container.innerHTML += `
+                    <div class="bg-slate-900 border-2 border-emerald-500/40 rounded-2xl p-4 flex flex-col gap-2.5 shadow">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <span class="text-[9px] uppercase font-black text-emerald-300">Level ${upg.level} Upgrade</span>
+                                <h3 class="font-black text-sm text-white">${upg.name}</h3>
+                            </div>
+                            <span class="text-xs font-mono font-black text-amber-300">$${totalCost}</span>
+                        </div>
+                        <p class="text-[11px] text-emerald-100/80">${upg.desc}</p>
+                        <button onclick="buyUpgrade('${upg.id}')" class="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black py-2 rounded-xl text-xs uppercase tracking-wider shadow-lg transition-all active:scale-95 border border-emerald-200">
+                            Upgrade Facility
+                        </button>
+                    </div>
+                `;
+            });
+        }
+
+        function buyUpgrade(id) {
+            const upg = upgrades.find(u => u.id === id);
+            const totalCost = upg.cost * upg.level;
+            if (cash >= totalCost) {
+                cash -= totalCost;
+                upg.level++;
+                renderUpgradesList();
+                updateHubUI();
+                saveGameState();
+                openModal("Upgrade Installed!", `${upg.name} successfully upgraded to Level ${upg.level}!`);
+            } else {
+                openModal("Insufficient Funds", "You need more cash in your treasury to purchase this upgrade.");
+            }
+        }
+
+        function renderHustleScreen() {
+            const spContainer = document.getElementById('sponsorSectionContainer');
+            spContainer.innerHTML = '';
+            availableSponsors.forEach(sp => {
+                let isCurrent = activeSponsor && activeSponsor.id === sp.id;
+                let canUnlock = rep >= sp.reqRep;
+                let btnHtml = '';
+                if (isCurrent) {
+                    btnHtml = `<span class="text-emerald-300 font-black text-[10px] bg-emerald-500/20 border border-emerald-500/40 px-3 py-1 rounded-lg">ACTIVE SPONSOR</span>`;
+                } else if (canUnlock) {
+                    btnHtml = `<button onclick="signSponsor('${sp.id}')" class="bg-purple-600 hover:bg-purple-500 text-white font-black px-3 py-1.5 rounded-xl text-[10px] uppercase shadow border border-purple-400">Sign Contract</button>`;
+                } else {
+                    btnHtml = `<span class="text-slate-400 font-bold text-[10px]">Requires ${sp.reqRep} REP</span>`;
+                }
+
+                spContainer.innerHTML += `
+                    <div class="bg-slate-950 border border-purple-500/30 rounded-xl p-2.5 flex justify-between items-center text-xs shadow">
+                        <div>
+                            <span class="font-black text-white block">${sp.name}</span>
+                            <span class="text-[10px] text-purple-300 font-mono">+$${sp.payout} bonus per win</span>
+                        </div>
+                        ${btnHtml}
+                    </div>
+                `;
+            });
+
+            const betContainer = document.getElementById('betsSectionContainer');
+            betContainer.innerHTML = '';
+            availableBets.forEach(bet => {
+                let isActive = activeBet && activeBet.id === bet.id;
+                let btnText = isActive ? "BET ACTIVE (Cancel)" : "Place Wager";
+                let btnClass = isActive ? "bg-rose-600 text-white border border-rose-400" : "bg-amber-400 text-slate-950 border border-yellow-200";
+
+                betContainer.innerHTML += `
+                    <div class="bg-slate-950 border border-amber-500/30 rounded-xl p-3 flex justify-between items-center text-xs shadow">
+                        <div>
+                            <span class="font-black text-white block">${bet.name}</span>
+                            <span class="text-[10px] text-amber-300 font-mono">Stake: $${bet.stake}</span>
+                        </div>
+                        <button onclick="toggleSpecificBet('${bet.id}')" class="${btnClass} font-black px-3 py-1.5 rounded-xl text-[10px] uppercase shadow transition-all active:scale-95">
+                            ${btnText}
+                        </button>
+                    </div>
+                `;
+            });
+
+            const mixContainer = document.getElementById('mixtapeSectionContainer');
+            mixContainer.innerHTML = '';
+            mixtapes.forEach(mix => {
+                mixContainer.innerHTML += `
+                    <div class="bg-slate-950 border border-rose-500/30 rounded-xl p-3 flex justify-between items-center text-xs shadow">
+                        <div>
+                            <span class="font-black text-white block">${mix.name}</span>
+                            <span class="text-[10px] text-pink-300 font-mono">+$${mix.cashEarn} & +${mix.repEarn} REP</span>
+                        </div>
+                        <button onclick="dropSpecificMixtape('${mix.id}')" class="bg-gradient-to-r from-rose-500 to-orange-500 text-slate-950 font-black px-3 py-1.5 rounded-xl text-[10px] uppercase shadow transition-all active:scale-95 border border-pink-200">
+                            Record
+                        </button>
+                    </div>
+                `;
+            });
+        }
+
+        function signSponsor(id) {
+            const sp = availableSponsors.find(s => s.id === id);
+            if (sp && rep >= sp.reqRep) {
+                activeSponsor = sp;
+                renderHustleScreen();
+                updateHubUI();
+                saveGameState();
+                openModal("Sponsorship Signed!", `You have officially partnered with ${sp.name}! Extra cash bonuses are now active for every victory.`);
+            }
+        }
+
+        function toggleSpecificBet(id) {
+            const bet = availableBets.find(b => b.id === id);
+            if (activeBet && activeBet.id === id) {
+                activeBet = null;
+                openModal("Wager Cancelled", "Your match wager has been cancelled.");
+            } else {
+                if (cash >= bet.stake) {
+                    activeBet = bet;
+                    openModal("Wager Placed!", `Placed a $${bet.stake} wager. Win your next match to collect your multiplied payout!`);
+                } else {
+                    openModal("Insufficient Cash", "You do not have enough cash in your treasury to cover this stake.");
+                }
+            }
+            renderHustleScreen();
+            saveGameState();
+        }
+
+        function dropSpecificMixtape(id) {
+            const mix = mixtapes.find(m => m.id === id);
+            if (mix) {
+                cash += mix.cashEarn;
+                rep += mix.repEarn;
+                updateHubUI();
+                saveGameState();
+                openModal("Mixtape Viral Hit!", `${mix.name} dropped online and blew up! Earned +$${mix.cashEarn} and +${rep} REP.`);
+            }
+        }
+
+        window.onload = function() {
+            loadGameState();
+            if (inActiveMatch) {
+                restoreActiveMatchState();
+            } else {
+                updateHubUI();
+            }
+        };
+    </script>
+</body>
+</html>
