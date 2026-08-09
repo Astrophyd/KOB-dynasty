@@ -2,7 +2,13 @@
 
 A browser-based street basketball management simulator where you build and lead your neighborhood crew through an epic tournament circuit.
 
-## 🎮 How to Play
+## 🎮 Play Now
+
+**[▶️ PLAY KOB DYNASTY](https://astrophyd.github.io/KOB-dynasty/KOB%20Dynasty%20-%20Made%20by%20Astrophyd.html)**
+
+---
+
+## 📖 How to Play
 
 ### Main Hub
 From the main screen, navigate to:
